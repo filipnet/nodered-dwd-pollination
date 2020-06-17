@@ -1,0 +1,158 @@
+[
+    {
+        "id": "e697ff25.23aed",
+        "type": "function",
+        "z": "aa541541.ac3898",
+        "name": "Early bloomers in Rhineland-Palatinate",
+        "func": "region = 19; //19 = Rheinland-Pfalz und Saarland, Mittelgebirgsbereich Rheinland-Pfalz\n\n/*\nLegend = legend = msg.payload.legend;\n3 = \"hohe Belastung\";\n2-3 = \"mittlere bis hohe Belastung\";\n2 = \"mittlere Belastung\";\n1-2 = \"geringe bis mittlere Belastung\";\n1 = \"geringe Belastung\";\n0-1 = \"keine bis geringe Belastung\";\n0 = \"keine Belastung\";\n*/\n\nvar messagetext = \"Hasel: \"+ msg.payload.content[region].Pollen.Hasel.today+\"\\nBirken: \" + msg.payload.content[region].Pollen.Birke.today+\"\\nGräser: \" + msg.payload.content[region].Pollen.Graeser.today;\nmsg.payload = messagetext;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 670,
+        "y": 80,
+        "wires": [
+            [
+                "58ead62.6e59a28",
+                "74567334.35f76c"
+            ]
+        ]
+    },
+    {
+        "id": "8547757b.a782f8",
+        "type": "http request",
+        "z": "aa541541.ac3898",
+        "name": "Get JSON data from DWD",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "https://opendata.dwd.de/climate_environment/health/alerts/s31fg.json",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 360,
+        "y": 80,
+        "wires": [
+            [
+                "e697ff25.23aed",
+                "f4bb6382.968a1"
+            ]
+        ]
+    },
+    {
+        "id": "307076a8.1129ea",
+        "type": "inject",
+        "z": "aa541541.ac3898",
+        "name": "daily at 6 AM",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 150,
+        "y": 80,
+        "wires": [
+            [
+                "8547757b.a782f8"
+            ]
+        ]
+    },
+    {
+        "id": "58ead62.6e59a28",
+        "type": "debug",
+        "z": "aa541541.ac3898",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 910,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "f4bb6382.968a1",
+        "type": "debug",
+        "z": "aa541541.ac3898",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 590,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "74567334.35f76c",
+        "type": "rbe",
+        "z": "aa541541.ac3898",
+        "name": "block unless value changes",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "property": "payload",
+        "x": 980,
+        "y": 80,
+        "wires": [
+            [
+                "39ab98ca.48d1a8"
+            ]
+        ]
+    },
+    {
+        "id": "39ab98ca.48d1a8",
+        "type": "mqtt out",
+        "z": "aa541541.ac3898",
+        "name": "",
+        "topic": "home/outdoor/weather/pollination",
+        "qos": "2",
+        "retain": "true",
+        "broker": "89c47141.2fd35",
+        "x": 1260,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "89c47141.2fd35",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "broker.tld.de",
+        "broker": "broker.tld.de",
+        "port": "8883",
+        "tls": "dab1e87b.a61058",
+        "clientid": "",
+        "usetls": true,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "dab1e87b.a61058",
+        "type": "tls-config",
+        "z": "",
+        "name": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "servername": "",
+        "verifyservercert": false
+    }
+]
